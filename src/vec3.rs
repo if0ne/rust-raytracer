@@ -65,6 +65,15 @@ impl Vec3 {
     pub fn normalize(&self) -> Vec3 {
         *self / self.len()
     }
+
+    pub fn into_rgb(&self, samples_per_pixel: f64) -> [u8; 3] {
+        let scale = 1.0 / samples_per_pixel;
+        let r = (256.0 * (self.e[0] * scale).clamp(0.0, 0.999)) as u8;
+        let g = (256.0 * (self.e[1] * scale).clamp(0.0, 0.999)) as u8;
+        let b = (256.0 * (self.e[2] * scale).clamp(0.0, 0.999)) as u8;
+
+        [r, g, b]
+    }
 }
 
 impl ops::Neg for Vec3 {
@@ -162,15 +171,5 @@ impl ops::DivAssign<f64> for Vec3 {
         self.e[0] /= rhs;
         self.e[1] /= rhs;
         self.e[2] /= rhs;
-    }
-}
-
-impl Into<[u8; 3]> for Vec3 {
-    fn into(self) -> [u8; 3] {
-        let r = (255.999 * self.e[0]).trunc() as u8;
-        let g = (255.999 * self.e[1]).trunc() as u8;
-        let b = (255.999 * self.e[2]).trunc() as u8;
-
-        [r, g, b]
     }
 }
