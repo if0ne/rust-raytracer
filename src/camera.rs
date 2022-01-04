@@ -5,29 +5,54 @@ pub struct Camera {
     lower_left_corner: Point3,
     horizontal: Vec3,
     vertical: Vec3,
+    u: Vec3,
+    v: Vec3,
+    w: Vec3,
+    lens_radius: f64,
 }
 
 impl Camera {
-    pub fn new() -> Self {
-        let aspect_ratio = 16.0 / 9.0;
-        let viewport_height = 2.0;
+    pub fn new(
+        vert_fov: f64,
+        aspect_ratio: f64,
+        look_from: &Point3,
+        look_at: &Point3,
+        vup: &Vec3,
+        aperture: f64,
+        focus_dist: f64,
+    ) -> Self {
+        let theta = vert_fov.to_radians();
+        let h = (theta / 2.0).tan();
+        let viewport_height = 2.0 * h;
         let viewport_width = aspect_ratio * viewport_height;
+
+        let w = (*look_from - *look_at).normalize();
+        let u = Vec3::cross(vup, &w).normalize();
+        let v = Vec3::cross(&w, &u);
+
         let focal_length = 1.0;
 
-        let origin = Point3::new();
-        let horizontal = Vec3::with(viewport_width, 0.0,0.0);
-        let vertical = Vec3::with(0.0, viewport_height, 0.0);
-        let lower_left_corner = origin - horizontal/2.0 - vertical/2.0 - Vec3::with(0.0, 0.0, focal_length);
+        let origin = look_from;
+        let horizontal = focus_dist * viewport_width * u;
+        let vertical = focus_dist * viewport_height * v;
+        let lower_left_corner = *origin - horizontal/2.0 - vertical/2.0 - focus_dist*w;
 
         Camera {
-            origin,
+            origin: *origin,
             lower_left_corner,
             horizontal,
             vertical,
+            u,
+            v,
+            w,
+            lens_radius: aperture / 2.0,
         }
     }
 
-    pub fn get_ray(&self, u: f64, v: f64) -> Ray {
-        Ray::with(&self.origin, &(self.lower_left_corner + u*self.horizontal + v*self.vertical - self.origin))
+    pub fn get_ray(&self, s: f64, t: f64) -> Ray {
+        let rd = self.lens_radius * Vec3::random_in_unit_disk();
+        let offset = s * rd.x() + t * rd.y();
+
+        Ray::with(&(self.origin + offset), &(self.lower_left_corner + s*self.horizontal + t*self.vertical - self.origin  + (-offset)))
     }
 }
