@@ -1,7 +1,7 @@
-use std::rc::Rc;
 use crate::hittable::{HitRecord, Hittable};
-use crate::{Point3, Ray, Vec3};
 use crate::material::Material;
+use crate::{Point3, Ray, Vec3};
+use std::rc::Rc;
 
 pub struct Sphere {
     center: Point3,
@@ -14,7 +14,7 @@ impl Sphere {
         Self {
             center: *center,
             radius,
-            material
+            material,
         }
     }
 }
@@ -23,12 +23,12 @@ impl Hittable for Sphere {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         //B*B*t^2 + 2*B*(A-C)*t + (A - C)*(A - C) - r^2 = 0
         //Формула корней квадратного уравнения с четным вторым коэффициентом
-        let oc = ray.origin() - self.center;                    //A - C
-        let a = ray.direction().len_sqr();                       //B*B (coef: a)
-        let b = Vec3::dot(&(ray.direction()), &oc);       //2*B*(A - C) (coef: b)
-        let c = oc.len_sqr() - self.radius * self.radius;       //(A - C)*(A - C) - r^2 (coef: c)
+        let oc = ray.origin() - self.center; //A - C
+        let a = ray.direction().len_sqr(); //B*B (coef: a)
+        let b = Vec3::dot(&(ray.direction()), &oc); //2*B*(A - C) (coef: b)
+        let c = oc.len_sqr() - self.radius * self.radius; //(A - C)*(A - C) - r^2 (coef: c)
 
-        let discriminant = b*b - a*c;
+        let discriminant = b * b - a * c;
 
         if discriminant < 0.0 {
             return None;
@@ -45,6 +45,12 @@ impl Hittable for Sphere {
             return None;
         };
 
-        Some(HitRecord::new(ray, &self.center, root, self.radius, self.material.clone()))
+        Some(HitRecord::new(
+            ray,
+            &self.center,
+            root,
+            self.radius,
+            self.material.clone(),
+        ))
     }
 }

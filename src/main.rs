@@ -1,16 +1,16 @@
-mod vec3;
-mod ray;
-mod hittable;
-mod sphere;
-mod world;
 mod camera;
+mod hittable;
 mod material;
+mod ray;
+mod sphere;
+mod vec3;
+mod world;
 
 use indicatif::ProgressBar;
-use std::path::Path;
-use std::rc::Rc;
 use rand::Rng;
 use rayon::prelude::*;
+use std::path::Path;
+use std::rc::Rc;
 
 use crate::camera::Camera;
 use crate::hittable::Hittable;
@@ -36,7 +36,7 @@ fn ray_color(r: &Ray, entity: &dyn Hittable, depth: i32) -> Color {
     let unit = r.direction().normalize();
     let t = 0.5 * (unit.y() + 1.0);
 
-    (1.0 - t)*Color::with(1.0, 1.0, 1.0) + t*Color::with(0.5, 0.7, 1.0)
+    (1.0 - t) * Color::with(1.0, 1.0, 1.0) + t * Color::with(0.5, 0.7, 1.0)
 }
 
 fn main() {
@@ -44,20 +44,36 @@ fn main() {
     let aspect_ration = 16.0 / 9.0;
     let width = 400u32;
     let height = (width as f64 / aspect_ration).trunc() as u32;
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 10;
     let max_depth = 50;
 
     //World
-    let mat_ground  = Rc::new(Lambertian::new(&Color::with(0.8, 0.8, 0.0)));
-    let mat_center  = Rc::new(Lambertian::new(&Color::with(0.7, 0.3, 0.3)));
-    let mat_left  = Rc::new(Metal::new(&Color::with(0.8, 0.8, 0.3), 0.5));
-    let mat_right  = Rc::new(Dielectric::new(1.5));
+    let mat_ground = Rc::new(Lambertian::new(&Color::with(0.8, 0.8, 0.0)));
+    let mat_center = Rc::new(Lambertian::new(&Color::with(0.7, 0.3, 0.3)));
+    let mat_left = Rc::new(Metal::new(&Color::with(0.8, 0.8, 0.3), 0.5));
+    let mat_right = Rc::new(Dielectric::new(1.5));
 
     let mut world = World::new();
-    world.add(Rc::new(Sphere::new(&Point3::with(0.0, -100.5, -1.0), 100.0, mat_ground.clone())));
-    world.add(Rc::new(Sphere::new(&Point3::with(0.0, 0.0, -1.0), 0.5, mat_center.clone())));
-    world.add(Rc::new(Sphere::new(&Point3::with(-1.0, 0.0, -1.0), 0.5, mat_left.clone())));
-    world.add(Rc::new(Sphere::new(&Point3::with(1.0, 0.0, -1.0), 0.5, mat_right.clone())));
+    world.add(Rc::new(Sphere::new(
+        &Point3::with(0.0, -100.5, -1.0),
+        100.0,
+        mat_ground.clone(),
+    )));
+    world.add(Rc::new(Sphere::new(
+        &Point3::with(0.0, 0.0, -1.0),
+        0.5,
+        mat_center.clone(),
+    )));
+    world.add(Rc::new(Sphere::new(
+        &Point3::with(-1.0, 0.0, -1.0),
+        0.5,
+        mat_left.clone(),
+    )));
+    world.add(Rc::new(Sphere::new(
+        &Point3::with(1.0, 0.0, -1.0),
+        0.5,
+        mat_right.clone(),
+    )));
 
     //Camera
     let camera = Camera::new(
@@ -67,7 +83,7 @@ fn main() {
         &Point3::with(0.0, 0.0, -1.0),
         &Vec3::with(0.0, 1.0, 0.0),
         2.0,
-        (Point3::with(3.0, 3.0, 2.0) - Point3::with(0.0, 0.0, -1.0)).len()
+        (Point3::with(3.0, 3.0, 2.0) - Point3::with(0.0, 0.0, -1.0)).len(),
     );
 
     //Render

@@ -16,7 +16,7 @@ impl Ray {
     pub fn with(origin: &Point3, dir: &Vec3) -> Self {
         Self {
             origin: *origin,
-            dir: *dir
+            dir: *dir,
         }
     }
 

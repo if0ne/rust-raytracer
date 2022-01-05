@@ -1,7 +1,7 @@
-use std::{fmt, ops};
+use rand::Rng;
 use std::cmp::min;
 use std::fmt::Formatter;
-use rand::Rng;
+use std::{fmt, ops};
 
 pub type Point3 = Vec3;
 pub type Color = Vec3;
@@ -19,15 +19,11 @@ impl fmt::Display for Vec3 {
 
 impl Vec3 {
     pub fn new() -> Self {
-        Self {
-            e: [0.0, 0.0, 0.0],
-        }
+        Self { e: [0.0, 0.0, 0.0] }
     }
 
     pub fn with(x: f64, y: f64, z: f64) -> Self {
-        Self {
-            e: [x, y, z],
-        }
+        Self { e: [x, y, z] }
     }
 
     pub fn dot(u: &Self, v: &Self) -> f64 {
@@ -39,8 +35,8 @@ impl Vec3 {
             e: [
                 u.e[1] * v.e[2] - u.e[2] * v.e[1],
                 u.e[2] * v.e[0] - u.e[0] * v.e[2],
-                u.e[0] * v.e[1] - u.e[1] * v.e[0]
-            ]
+                u.e[0] * v.e[1] - u.e[1] * v.e[0],
+            ],
         }
     }
 
@@ -49,8 +45,8 @@ impl Vec3 {
             e: [
                 rand::thread_rng().gen_range(min..max),
                 rand::thread_rng().gen_range(min..max),
-                rand::thread_rng().gen_range(min..max)
-            ]
+                rand::thread_rng().gen_range(min..max),
+            ],
         }
     }
 
@@ -80,7 +76,11 @@ impl Vec3 {
 
     pub fn random_in_unit_disk() -> Vec3 {
         let vec = loop {
-            let p = Vec3::with(rand::thread_rng().gen_range(-1.0..1.0), rand::thread_rng().gen_range(-1.0..1.0), 0.0);
+            let p = Vec3::with(
+                rand::thread_rng().gen_range(-1.0..1.0),
+                rand::thread_rng().gen_range(-1.0..1.0),
+                0.0,
+            );
             if p.len_sqr() < 1.0 {
                 break p;
             }
@@ -90,11 +90,11 @@ impl Vec3 {
     }
 
     pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
-        *v - 2.0*Vec3::dot(v, n)*(*n)
+        *v - 2.0 * Vec3::dot(v, n) * (*n)
     }
 
     pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f64) -> Vec3 {
-        let cos_theta =  {
+        let cos_theta = {
             let dot = Vec3::dot(&-*uv, n);
             if dot > 1.0 {
                 1.0
@@ -102,7 +102,7 @@ impl Vec3 {
                 dot
             }
         };
-        let r_out_perp = etai_over_etat * (*uv + cos_theta*(*n));
+        let r_out_perp = etai_over_etat * (*uv + cos_theta * (*n));
         let r_out_parallel = -(1.0 - r_out_perp.len_sqr()).abs().sqrt() * (*n);
         r_out_perp + r_out_parallel
     }
@@ -133,7 +133,8 @@ impl Vec3 {
 
     pub fn into_rgb(&self, samples_per_pixel: f64) -> [u8; 3] {
         let scale = 1.0 / samples_per_pixel;
-        let rgb = self.e
+        let rgb = self
+            .e
             .map(|t| (t * scale).sqrt())
             .map(|t| 256.0 * t.clamp(0.0, 0.999))
             .map(|t| t.trunc() as u8);
@@ -152,11 +153,7 @@ impl ops::Neg for Vec3 {
 
     fn neg(self) -> Self::Output {
         Vec3 {
-            e: [
-                -self.e[0],
-                -self.e[1],
-                -self.e[2]
-            ]
+            e: [-self.e[0], -self.e[1], -self.e[2]],
         }
     }
 }
@@ -169,7 +166,7 @@ impl ops::Add<Vec3> for Vec3 {
             e: [
                 self.e[0] + rhs.e[0],
                 self.e[1] + rhs.e[1],
-                self.e[2] + rhs.e[2]
+                self.e[2] + rhs.e[2],
             ],
         }
     }
@@ -180,11 +177,7 @@ impl ops::Add<f64> for Vec3 {
 
     fn add(self, rhs: f64) -> Self::Output {
         Vec3 {
-            e: [
-                self.e[0] + rhs,
-                self.e[1] + rhs,
-                self.e[2] + rhs,
-            ],
+            e: [self.e[0] + rhs, self.e[1] + rhs, self.e[2] + rhs],
         }
     }
 }
@@ -202,11 +195,7 @@ impl ops::Mul<f64> for Vec3 {
 
     fn mul(self, rhs: f64) -> Self::Output {
         Vec3 {
-            e: [
-                self.e[0] * rhs,
-                self.e[1] * rhs,
-                self.e[2] * rhs,
-            ],
+            e: [self.e[0] * rhs, self.e[1] * rhs, self.e[2] * rhs],
         }
     }
 }
@@ -224,11 +213,7 @@ impl ops::Mul<Vec3> for Vec3 {
 
     fn mul(self, rhs: Vec3) -> Self::Output {
         Vec3 {
-            e: [
-                self.x() * rhs.x(),
-                self.y() * rhs.y(),
-                self.z() * rhs.z(),
-            ],
+            e: [self.x() * rhs.x(), self.y() * rhs.y(), self.z() * rhs.z()],
         }
     }
 }

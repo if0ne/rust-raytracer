@@ -1,16 +1,14 @@
-use std::rc::Rc;
-use crate::{Hittable, Ray};
 use crate::hittable::HitRecord;
+use crate::{Hittable, Ray};
+use std::rc::Rc;
 
 pub struct World {
-    entities: Vec<Rc<dyn Hittable>>
+    entities: Vec<Rc<dyn Hittable>>,
 }
 
 impl World {
     pub fn new() -> Self {
-        World {
-            entities: vec![]
-        }
+        World { entities: vec![] }
     }
 
     pub fn add(&mut self, object: Rc<dyn Hittable>) {

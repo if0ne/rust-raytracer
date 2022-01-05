@@ -35,7 +35,7 @@ impl Camera {
         let origin = look_from;
         let horizontal = focus_dist * viewport_width * u;
         let vertical = focus_dist * viewport_height * v;
-        let lower_left_corner = *origin - horizontal/2.0 - vertical/2.0 - focus_dist*w;
+        let lower_left_corner = *origin - horizontal / 2.0 - vertical / 2.0 - focus_dist * w;
 
         Camera {
             origin: *origin,
@@ -53,6 +53,10 @@ impl Camera {
         let rd = self.lens_radius * Vec3::random_in_unit_disk();
         let offset = s * rd.x() + t * rd.y();
 
-        Ray::with(&(self.origin + offset), &(self.lower_left_corner + s*self.horizontal + t*self.vertical - self.origin  + (-offset)))
+        Ray::with(
+            &(self.origin + offset),
+            &(self.lower_left_corner + s * self.horizontal + t * self.vertical - self.origin
+                + (-offset)),
+        )
     }
 }
